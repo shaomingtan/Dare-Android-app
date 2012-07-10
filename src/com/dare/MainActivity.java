@@ -5,15 +5,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParserException;
-
 import com.dare.R;
 import com.dare.model.Challenge;
+import com.dare.model.ChallengeController;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,21 +17,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.Menu;
-import android.webkit.WebView;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
 	private ArrayList<Challenge> _challenges;
+	private ChallengeController _challengeController;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
         setContentView(R.layout.activity_main);
-        refreshChallenges();
+        refreshChallenges(null);
         _challenges = new ArrayList<Challenge>();
+        _challengeController = new ChallengeController(this);
         
         TextView label = (TextView) findViewById(R.id.tempText);
 		label.setText("Refreshing ...");
@@ -46,10 +43,9 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
-
     
     // Uses AsyncTask subclass to download the challenge feed from the server
-    private void refreshChallenges() {
+    public void refreshChallenges(View view) {
     	ConnectivityManager connMgr = (ConnectivityManager)     	
     			getSystemService(Context.CONNECTIVITY_SERVICE);
     	
@@ -79,9 +75,7 @@ public class MainActivity extends Activity {
     }
     
     private void fetchChallenges()
-    {
-		InputStream stream = null;
-		
+    {		
     	try
     	{
     		String urlString = "http://quiet-mist-1776.herokuapp.com/challenges.json";
@@ -94,24 +88,14 @@ public class MainActivity extends Activity {
 
     		// Starts the query
     		conn.connect();
-    		stream = conn.getInputStream();
-    	}
-    	catch (IOException ex) {}
-    		    		    		
-    	try {
+    		InputStream stream = conn.getInputStream();
+    		
     		String response = new java.util.Scanner(stream).useDelimiter("\\A").next();
-    		JSONArray jsArray = new JSONArray(response);
-    		if (jsArray != null && jsArray.length() > 0)
-    		{
-    			for (int i = 0; i < jsArray.length(); i++) {
-    				_challenges.add(new Challenge(jsArray.getJSONObject(i)));
-    			}
-    		}
-    	} 
-    	catch (java.util.NoSuchElementException e) {}
+    		_challengeController.updateDbWithRefreshResponse(new JSONArray(response));
+    	}
+    	catch (IOException ioEx) {}    	
     	catch (JSONException jsonEx) {}
+    	catch (Exception ex) {}
     }
-    
-    
 
 }
