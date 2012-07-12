@@ -10,16 +10,20 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.dare.MainActivity;
+import com.dare.ChallengesListFragment;
 import com.dare.R;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 public class ChallengeController {
 	private ChallengeDbHelper _db;	
+	private Context _context;
 	
 	public ChallengeController(Context context){
+		_context = context;
 		_db = new ChallengeDbHelper(context);
 	}
 	
@@ -45,36 +49,37 @@ public class ChallengeController {
     	catch (IOException ioEx) {}    	
     	catch (JSONException jsonEx) {}
     	catch (Exception ex) {
-    		Log.e(MainActivity.class.toString(), ("Error Fetching Challenges: " + ex.toString()));
+    		Log.e(ChallengesListFragment.class.toString(), ("Error Fetching Challenges: " + ex.toString()));
     	}
     }
 		
 	private void updateDbWithRefreshResponse(JSONArray response)
-	{
-		_db.open();
+	{		
 		
 		if (response != null && response.length() > 0)
 		{
 			for (int i = 0; i < response.length(); i++) {
 				try{
 					Challenge challenge = new Challenge(response.getJSONObject(i));
-					Date lastUpdate = _db.challengeExists(challenge.getId());
+					ContentValues challengeValues = ChallengeProvider.challengeToContentValues(challenge);
+					long challengeId = challenge.getId();
+					
+					Date lastUpdate = _db.challengeExists(challengeId);
 					if (lastUpdate == null){
-						_db.addChallenge(challenge);
+						_context.getContentResolver().insert(ChallengeProvider.CONTENT_URI, challengeValues);						
 					}
 					else{
 						Date currentUpdate = _db.dateFormatter.parse(challenge.getUpdatedAt());
 						if (currentUpdate.after(lastUpdate)){
-							_db.updateChallenge(challenge);
+							Uri updateUri = Uri.withAppendedPath(ChallengeProvider.CONTENT_URI, String.valueOf(challengeId));
+							_context.getContentResolver().update(updateUri, challengeValues, null, null);
 						}
 					}
 				} 
 				catch (JSONException jsonEx) {} 
 				catch (ParseException parseEx) {}
 			}
-		}
-		
-		_db.close();
+		}			
 	}		
 	
 }

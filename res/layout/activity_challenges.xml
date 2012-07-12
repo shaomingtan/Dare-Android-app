@@ -9,14 +9,10 @@
         android:onClick="refreshChallenges"
         android:text="@string/button_refresh" />
     
-    <TextView
-        android:id="@+id/tempText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    
-    <ListView
-        android:id="@+id/mylist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />    
+    <fragment android:name="com.dare.ChallengesListFragment"
+            android:id="@+id/list_challenges_main"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent" />    
 
 </LinearLayout>
