@@ -1,4 +1,7 @@
-package com.dare;
+package com.dare.activity;
+
+import com.dare.R;
+import com.dare.fragment.ChallengesListFragment;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;

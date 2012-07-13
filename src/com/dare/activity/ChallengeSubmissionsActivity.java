@@ -1,7 +1,8 @@
-package com.dare;
+package com.dare.activity;
 
+import com.dare.R;
+import com.dare.db.ChallengeTable;
 import com.dare.model.Challenge;
-import com.dare.model.ChallengeDbHelper;
 import com.dare.model.ChallengeProvider;
 
 import android.net.Uri;
@@ -37,7 +38,7 @@ public class ChallengeSubmissionsActivity extends Activity {
     public void loadChallenge(Uri challengeUri)
     {
     	if (challengeUri != null) {    		
-    		String[] projection = { ChallengeDbHelper.COLUMN_BRAND_NAME, ChallengeDbHelper.COLUMN_TITLE, ChallengeDbHelper.COLUMN_DESCRIPTION, ChallengeDbHelper.COLUMN_ID };    		
+    		String[] projection = { ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION, ChallengeTable.COLUMN_ID };    		
     		Cursor cursor = getContentResolver().query(challengeUri, projection, null, null, null);
     		
     		if (cursor != null && cursor.moveToFirst()) {

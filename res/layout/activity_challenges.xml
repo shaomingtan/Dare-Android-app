@@ -10,7 +10,7 @@
         android:onClick="refreshChallenges"
         android:text="@string/button_refresh" />
     
-    <fragment android:name="com.dare.ChallengesListFragment"
+    <fragment android:name="com.dare.fragment.ChallengesListFragment"
             android:id="@+id/list_challenges_main"
             android:layout_weight="1"
             android:layout_width="match_parent"

@@ -10,20 +10,19 @@ import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.dare.ChallengesListFragment;
 import com.dare.Constants;
+import com.dare.fragment.ChallengesListFragment;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
 public class ChallengeController {
-	private ChallengeDbHelper _db;	
 	private Context _context;
 	
 	public ChallengeController(Context context){
-		_context = context;
-		_db = new ChallengeDbHelper(context);
+		_context = context;		
 	}
 	
 	public void fetchChallenges()
@@ -67,12 +66,12 @@ public class ChallengeController {
 					ContentValues challengeValues = ChallengeProvider.challengeToContentValues(challenge);
 					long challengeId = challenge.getId();
 					
-					Date lastUpdate = _db.challengeExists(challengeId);
+					Date lastUpdate = ChallengeProvider.challengeExists(challengeId);
 					if (lastUpdate == null){
 						_context.getContentResolver().insert(ChallengeProvider.CONTENT_URI, challengeValues);						
 					}
 					else{
-						Date currentUpdate = _db.dateFormatter.parse(challenge.getUpdatedAt());
+						Date currentUpdate = ChallengeProvider.dateFormatter.parse(challenge.getUpdatedAt());
 						if (currentUpdate.after(lastUpdate)){
 							Uri updateUri = Uri.withAppendedPath(ChallengeProvider.CONTENT_URI, String.valueOf(challengeId));
 							_context.getContentResolver().update(updateUri, challengeValues, null, null);

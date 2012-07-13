@@ -13,10 +13,22 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme" 
+        android:name=".DareApplication"
+        >
         <activity
-            android:name=".ChallengesActivity"
+            android:name=".activity.ChallengesActivity"
             android:label="@string/title_activity_challenges" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".activity.ChallengeSubmissionsActivity"
+            android:label="@string/title_activity_challenge_submissions" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,16 +40,7 @@
             android:name=".model.ChallengeProvider"
             android:authorities="com.dare.contentprovider" >
         </provider>
-
-        <activity
-            android:name=".ChallengeSubmissionsActivity"
-            android:label="@string/title_activity_challenge_submissions" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        
     </application>
 
 </manifest>

@@ -1,9 +1,15 @@
 package com.dare.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 
 import com.dare.Constants;
+import com.dare.db.ChallengeTable;
+import com.dare.db.DareDbHelper;
+
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -13,25 +19,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class ChallengeProvider extends ContentProvider {
-	
-	// database
-	private ChallengeDbHelper _dbHelper;
 
 	// Used for the UriMacher
 	private static final int CHALLENGES = 10;
 	private static final int CHALLENGE_ID = 20;	
 
 	private static final String BASE_PATH = "challenges";
-	public static final Uri CONTENT_URI = Uri.parse("content://" 
-			+ Constants.CONTENT_PROVIDER_AUTHORITY
-			+ "/" + BASE_PATH);
+	public static final Uri CONTENT_URI = Uri.parse("content://" + Constants.CONTENT_PROVIDER_AUTHORITY + "/" + BASE_PATH);
 
-	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
-			+ "/challenges";
-	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
-			+ "/challenge";
+	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/challenges";
+	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/challenge";
 
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static {
@@ -39,9 +39,10 @@ public class ChallengeProvider extends ContentProvider {
 		sURIMatcher.addURI(Constants.CONTENT_PROVIDER_AUTHORITY, BASE_PATH + "/#", CHALLENGE_ID);
 	}
 	
+	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	
 	@Override
-	public boolean onCreate() {
-		_dbHelper = new ChallengeDbHelper(getContext());
+	public boolean onCreate() {				
 		return true;
 	}
 	
@@ -53,12 +54,12 @@ public class ChallengeProvider extends ContentProvider {
 		}
 		
 		int uriType = sURIMatcher.match(uri);
-		SQLiteDatabase db = _dbHelper.getWritableDatabase();
+		SQLiteDatabase db = DareDbHelper.getDb();
 		long id = -1;
 		
 		switch (uriType) {
 			case CHALLENGES:
-				id = db.insert(ChallengeDbHelper.TABLE_NAME, null,values);		
+				id = db.insert(ChallengeTable.TABLE_NAME, null,values);		
 				break;
 			default:				
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -76,12 +77,12 @@ public class ChallengeProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		int uriType = sURIMatcher.match(uri);
-		SQLiteDatabase db = _dbHelper.getWritableDatabase();
+		SQLiteDatabase db = DareDbHelper.getDb();
 		int rowsUpdated = 0;
 		
 		switch (uriType) {
 			case CHALLENGES:
-				rowsUpdated = db.update(ChallengeDbHelper.TABLE_NAME, 
+				rowsUpdated = db.update(ChallengeTable.TABLE_NAME, 
 						values, 
 						selection,
 						selectionArgs);
@@ -89,14 +90,14 @@ public class ChallengeProvider extends ContentProvider {
 			case CHALLENGE_ID:
 				String id = uri.getLastPathSegment();
 				if (TextUtils.isEmpty(selection)) {
-					rowsUpdated = db.update(ChallengeDbHelper.TABLE_NAME, 
+					rowsUpdated = db.update(ChallengeTable.TABLE_NAME, 
 							values,
-							ChallengeDbHelper.COLUMN_ID + "=" + id, 
+							ChallengeTable.COLUMN_ID + "=" + id, 
 							null);
 				} else {
-					rowsUpdated = db.update(ChallengeDbHelper.TABLE_NAME, 
+					rowsUpdated = db.update(ChallengeTable.TABLE_NAME, 
 							values,
-							ChallengeDbHelper.COLUMN_ID + "=" + id 
+							ChallengeTable.COLUMN_ID + "=" + id 
 							+ " and " 
 							+ selection,
 							selectionArgs);
@@ -126,7 +127,7 @@ public class ChallengeProvider extends ContentProvider {
 		checkColumns(projection);
 
 		// Set the table
-		queryBuilder.setTables(ChallengeDbHelper.TABLE_NAME);
+		queryBuilder.setTables(ChallengeTable.TABLE_NAME);
 
 		int uriType = sURIMatcher.match(uri);
 		switch (uriType) {
@@ -134,14 +135,14 @@ public class ChallengeProvider extends ContentProvider {
 			break;
 		case CHALLENGE_ID:
 			// Adding the ID to the original query
-			queryBuilder.appendWhere(ChallengeDbHelper.COLUMN_ID + "="
+			queryBuilder.appendWhere(ChallengeTable.COLUMN_ID + "="
 					+ uri.getLastPathSegment());
 			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 
-		SQLiteDatabase db = _dbHelper.getWritableDatabase();
+		SQLiteDatabase db = DareDbHelper.getDb();
 		Cursor cursor = queryBuilder.query(db, projection, selection,
 				selectionArgs, null, null, sortOrder);
 		
@@ -158,7 +159,7 @@ public class ChallengeProvider extends ContentProvider {
 	}
 	
 	private void checkColumns(String[] projection) {
-		String[] available = { ChallengeDbHelper.COLUMN_ID, ChallengeDbHelper.COLUMN_BRAND_NAME, ChallengeDbHelper.COLUMN_TITLE, ChallengeDbHelper.COLUMN_DESCRIPTION };
+		String[] available = { ChallengeTable.COLUMN_ID, ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION };
 		
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
@@ -170,14 +171,39 @@ public class ChallengeProvider extends ContentProvider {
 		}
 	}
 	
+	public static Date challengeExists(long challengeID)
+	{
+		Date lastUpdated = null;
+		SQLiteDatabase db = DareDbHelper.getDb();
+		
+		if (db != null)
+		{
+			String selection = (ChallengeTable.COLUMN_ID + " = " + challengeID);
+			String[] columns = {ChallengeTable.COLUMN_UPDATED_AT};
+			Cursor cursor = db.query(ChallengeTable.TABLE_NAME, columns, selection, null, null, null, null, null);
+			
+			if (cursor != null && cursor.moveToFirst())
+			{
+				try {					
+					String dateStr = cursor.getString(0);
+					lastUpdated = ChallengeProvider.dateFormatter.parse(dateStr);
+				} catch (ParseException e) {
+					Log.e(ChallengeTable.class.toString(), "DateParseIssue: " + e.toString());
+				}
+			}									
+		}
+		
+		return lastUpdated;
+	}
+	
 	public static ContentValues challengeToContentValues(Challenge challenge){
 		ContentValues values = new ContentValues();
-		values.put(ChallengeDbHelper.COLUMN_ID, challenge.getId());
-		values.put(ChallengeDbHelper.COLUMN_BRAND_NAME, challenge.getBrand());
-		values.put(ChallengeDbHelper.COLUMN_TITLE, challenge.getTitle());
-		values.put(ChallengeDbHelper.COLUMN_DESCRIPTION, challenge.getDescription());
-		values.put(ChallengeDbHelper.COLUMN_CREATED_AT, challenge.getCreatedAt());
-		values.put(ChallengeDbHelper.COLUMN_UPDATED_AT, challenge.getUpdatedAt());
+		values.put(ChallengeTable.COLUMN_ID, challenge.getId());
+		values.put(ChallengeTable.COLUMN_BRAND_NAME, challenge.getBrand());
+		values.put(ChallengeTable.COLUMN_TITLE, challenge.getTitle());
+		values.put(ChallengeTable.COLUMN_DESCRIPTION, challenge.getDescription());
+		values.put(ChallengeTable.COLUMN_CREATED_AT, challenge.getCreatedAt());
+		values.put(ChallengeTable.COLUMN_UPDATED_AT, challenge.getUpdatedAt());
 		return values;
 	}
 	
@@ -188,22 +214,22 @@ public class ChallengeProvider extends ContentProvider {
 			challenge = new Challenge();
 			int index;
 			
-			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_ID)) >= 0){
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_ID)) >= 0){
 				challenge.setId(cursor.getLong(index));
 			}
-			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_BRAND_NAME)) >= 0){
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_BRAND_NAME)) >= 0){
 				challenge.setBrand(cursor.getString(index));
 			}
-			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_TITLE)) >= 0){
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_TITLE)) >= 0){
 				challenge.setTitle(cursor.getString(index));
 			}
-			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_DESCRIPTION)) >= 0){
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_DESCRIPTION)) >= 0){
 				challenge.setDescription(cursor.getString(index));
 			}
-			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_CREATED_AT)) >= 0){
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_CREATED_AT)) >= 0){
 				challenge.setCreatedAt(cursor.getString(index));
 			}
-			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_UPDATED_AT)) >= 0){
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_UPDATED_AT)) >= 0){
 				challenge.setUpdatedAt(cursor.getString(index));
 			}			
 		}
