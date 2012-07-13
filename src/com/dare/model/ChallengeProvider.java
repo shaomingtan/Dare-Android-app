@@ -169,7 +169,6 @@ public class ChallengeProvider extends ContentProvider {
 			}
 		}
 	}
-
 	
 	public static ContentValues challengeToContentValues(Challenge challenge){
 		ContentValues values = new ContentValues();
@@ -180,6 +179,36 @@ public class ChallengeProvider extends ContentProvider {
 		values.put(ChallengeDbHelper.COLUMN_CREATED_AT, challenge.getCreatedAt());
 		values.put(ChallengeDbHelper.COLUMN_UPDATED_AT, challenge.getUpdatedAt());
 		return values;
+	}
+	
+	public static Challenge cursorToChallenge(Cursor cursor){
+		Challenge challenge = null; 
+		
+		if (cursor != null && !(cursor.isAfterLast() || cursor.isBeforeFirst())){
+			challenge = new Challenge();
+			int index;
+			
+			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_ID)) >= 0){
+				challenge.setId(cursor.getLong(index));
+			}
+			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_BRAND_NAME)) >= 0){
+				challenge.setBrand(cursor.getString(index));
+			}
+			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_TITLE)) >= 0){
+				challenge.setTitle(cursor.getString(index));
+			}
+			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_DESCRIPTION)) >= 0){
+				challenge.setDescription(cursor.getString(index));
+			}
+			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_CREATED_AT)) >= 0){
+				challenge.setCreatedAt(cursor.getString(index));
+			}
+			if ((index = cursor.getColumnIndex(ChallengeDbHelper.COLUMN_UPDATED_AT)) >= 0){
+				challenge.setUpdatedAt(cursor.getString(index));
+			}			
+		}
+		
+		return challenge;
 	}
 
 }

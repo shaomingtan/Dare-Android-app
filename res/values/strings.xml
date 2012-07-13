@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_challenges">Dare | Challenges</string>
     <string name="no_challenges">No challenges to display</string>
+    <string name="title_activity_challenge_submissions">Submissions</string>
 
 </resources>

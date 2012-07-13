@@ -50,19 +50,37 @@ public class Challenge  {
 	public long getId(){
 		return _id;
 	}
+	public void setId(long newId){
+		_id = newId;
+	}
 	public String getBrand(){
 		return _brand;
 	}	
+	public void setBrand(String brand){
+		_brand = brand;
+	}
 	public String getTitle(){
 		return _title;
+	}
+	public void setTitle(String title){
+		_title = title;
 	}
 	public String getDescription(){
 		return _description;
 	}
+	public void setDescription(String description){
+		_description = description;
+	}
 	public String getCreatedAt(){
 		return _created_at;
 	}
+	public void setCreatedAt(String createdAt){
+		_created_at = createdAt;
+	}
 	public String getUpdatedAt(){
 		return _updated_at;
+	}
+	public void setUpdatedAt(String updatedAt){
+		_updated_at = updatedAt;
 	}
 }

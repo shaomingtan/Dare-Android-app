@@ -4,15 +4,19 @@ import com.dare.model.ChallengeController;
 import com.dare.model.ChallengeDbHelper;
 import com.dare.model.ChallengeProvider;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.View;
+import android.widget.ListView;
 
 public class ChallengesListFragment 
 	extends ListFragment 
@@ -31,8 +35,8 @@ public class ChallengesListFragment
         
         _cursorAdapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.list_item_challenge, null,
-                new String[] { ChallengeDbHelper.COLUMN_BRAND_NAME, ChallengeDbHelper.COLUMN_TITLE, ChallengeDbHelper.COLUMN_DESCRIPTION },
-                new int[] {R.id.challenge_brand_label, R.id.challenge_title, R.id.challenge_description}, 0);
+                new String[] {ChallengeDbHelper.COLUMN_TITLE, ChallengeDbHelper.COLUMN_BRAND_NAME,  ChallengeDbHelper.COLUMN_DESCRIPTION },
+                new int[] { R.id.challenge_title, R.id.challenge_brand_label, R.id.challenge_description}, 0);
         setListAdapter(_cursorAdapter);
         
         // Prepare the loader.  Either re-connect with an existing one, or start a new one.
@@ -76,4 +80,16 @@ public class ChallengesListFragment
 		_cursorAdapter.swapCursor(null);		
 	}
 
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		Intent i = new Intent(getActivity(), ChallengeSubmissionsActivity.class);
+		Uri challengeUri = Uri.parse(ChallengeProvider.CONTENT_URI + "/" + id);
+		i.putExtra(ChallengeProvider.CONTENT_ITEM_TYPE, challengeUri);
+
+		// Activity returns an result if called with startActivityForResult
+		startActivity(i);
+	}
+
+	
 }
