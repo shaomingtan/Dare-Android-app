@@ -11,8 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.dare.ChallengesListFragment;
-import com.dare.R;
-
+import com.dare.Constants;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
@@ -31,7 +30,7 @@ public class ChallengeController {
     {		
     	try
     	{
-    		String urlString = (R.string.dare_service_url + "/challenges.json");
+			String urlString = (Constants.DARE_SERVICE_URL + "/challenges.json");
     		URL url = new URL(urlString);
     		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     		conn.setReadTimeout(10000 /* milliseconds */);
@@ -46,10 +45,14 @@ public class ChallengeController {
     		String response = new java.util.Scanner(stream).useDelimiter("\\A").next();
     		updateDbWithRefreshResponse(new JSONArray(response));
     	}
-    	catch (IOException ioEx) {}    	
-    	catch (JSONException jsonEx) {}
+    	catch (IOException ioEx) {
+    		Log.e(ChallengesListFragment.class.toString(), ("IOException Fetching Challenges: " + ioEx.toString()));
+    	}    	
+    	catch (JSONException jsonEx) {
+    		Log.e(ChallengesListFragment.class.toString(), ("JSONException Fetching Challenges: " + jsonEx.toString()));
+    	}
     	catch (Exception ex) {
-    		Log.e(ChallengesListFragment.class.toString(), ("Error Fetching Challenges: " + ex.toString()));
+    		Log.e(ChallengesListFragment.class.toString(), ("Exception Fetching Challenges: " + ex.toString()));
     	}
     }
 		

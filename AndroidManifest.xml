@@ -24,7 +24,7 @@
         </activity>
 
         <provider
-            android:name=".contentprovider.DareContentProvider"
+            android:name=".model.ChallengeProvider"
             android:authorities="com.dare.contentprovider" >
         </provider>
 

@@ -2,8 +2,8 @@ package com.dare;
 
 import com.dare.model.ChallengeController;
 import com.dare.model.ChallengeDbHelper;
+import com.dare.model.ChallengeProvider;
 
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -25,8 +25,7 @@ public class ChallengesListFragment
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);                
-        refreshChallenges();
+        super.onCreate(savedInstanceState);
         
         _challengeController = new ChallengeController(getActivity());
         
@@ -38,6 +37,8 @@ public class ChallengesListFragment
         
         // Prepare the loader.  Either re-connect with an existing one, or start a new one.
         getLoaderManager().initLoader(0, null, this);
+        
+        //refreshChallenges();
     }
         
     // Uses AsyncTask subclass to download the challenge feed from the server
@@ -61,27 +62,18 @@ public class ChallengesListFragment
     }
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		 Uri baseUri;		 
-
-		 // Now create and return a CursorLoader that will take care of
-		 // creating a Cursor for the data being displayed.
-//		 String select = "((" + Contacts.DISPLAY_NAME + " NOTNULL) AND ("
-//				 + Contacts.HAS_PHONE_NUMBER + "=1) AND ("
-//				 + Contacts.DISPLAY_NAME + " != '' ))";
-		 return new CursorLoader(getActivity());
-//		 , baseUri,
-//				 CONTACTS_SUMMARY_PROJECTION, select, null,
-//				 Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC");
+		String[] columnProjection = { ChallengeDbHelper.COLUMN_ID, ChallengeDbHelper.COLUMN_BRAND_NAME, ChallengeDbHelper.COLUMN_TITLE, ChallengeDbHelper.COLUMN_DESCRIPTION };
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), ChallengeProvider.CONTENT_URI, columnProjection, null, null, null);
+		
+		return cursorLoader;
 	}
 
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-		// TODO Auto-generated method stub
-		
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		_cursorAdapter.swapCursor(cursor);		
 	}
 
 	public void onLoaderReset(Loader<Cursor> arg0) {
-		// TODO Auto-generated method stub
-		
+		_cursorAdapter.swapCursor(null);		
 	}
 
 }

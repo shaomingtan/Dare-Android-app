@@ -66,10 +66,9 @@ public class ChallengeDbHelper extends SQLiteOpenHelper {
 			String[] columns = {COLUMN_UPDATED_AT};
 			Cursor cursor = db.query(TABLE_NAME, columns, selection, null, null, null, null, null);
 			
-			if (cursor != null)
+			if (cursor != null && cursor.moveToFirst())
 			{
-				try {
-					cursor.moveToFirst();
+				try {					
 					String dateStr = cursor.getString(0);
 					lastUpdated = dateFormatter.parse(dateStr);
 				} catch (ParseException e) {
