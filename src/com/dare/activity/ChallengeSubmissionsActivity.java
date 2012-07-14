@@ -24,7 +24,13 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_challenge_submissions);                
         
-		Uri challengeUri = null;
+		_titleLabel = (TextView) findViewById(R.id.challenge_detail_title);
+        
+        _listFragment = new SubmissionsListFragment();
+        _listFragment.setArguments(getIntent().getExtras());        
+        getSupportFragmentManager().beginTransaction().add(android.R.id.content, _listFragment).commit();
+        
+        Uri challengeUri = null;
         if (savedInstanceState != null) {
         	challengeUri =  (Uri) savedInstanceState.getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);
         }        
@@ -32,11 +38,7 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
 		if (extras != null) {
 			challengeUri = (Uri) extras.getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);			
 		}		
-		loadChallenge(challengeUri);		
-		
-		_titleLabel = (TextView) findViewById(R.id.challenge_detail_title);
-        _listFragment =  (SubmissionsListFragment) getSupportFragmentManager().findFragmentById(R.id.list_challenge_submissions);
-        _listFragment.setChallengeId(_challenge.getId());
+		loadChallenge(challengeUri);
     }
     
     public void loadChallenge(Uri challengeUri)

@@ -9,11 +9,6 @@
         android:layout_height="wrap_content" 
         android:id="@+id/challenge_detail_title"               
         />
-    
-    <fragment android:name="com.dare.fragment.SubmissionsListFragment"
-            android:id="@+id/list_challenge_submissions"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dip" />
+        
 
 </LinearLayout>

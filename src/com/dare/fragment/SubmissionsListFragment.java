@@ -3,10 +3,12 @@ package com.dare.fragment;
 import com.dare.Constants;
 import com.dare.R;
 import com.dare.db.SubmissionTable;
+import com.dare.model.ChallengeProvider;
 import com.dare.model.SubmissionController;
 import com.dare.model.SubmissionProvider;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -25,6 +27,9 @@ public class SubmissionsListFragment extends ListFragment implements LoaderManag
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
                 
+        Uri challengeUri = (Uri) getArguments().getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);
+        _challengeId = Long.parseLong(challengeUri.getLastPathSegment());
+        
         _submissionController = new SubmissionController(getActivity());
         
         _cursorAdapter = new SimpleCursorAdapter(getActivity(),
@@ -33,9 +38,11 @@ public class SubmissionsListFragment extends ListFragment implements LoaderManag
                 new int[] { R.id.submission_description}, 0);
         setListAdapter(_cursorAdapter);
         
+        
         // Prepare the loader.  Either re-connect with an existing one, or start a new one.
         getLoaderManager().initLoader(Constants.LOADER_SUBMISSIONS, null, this);
         
+                
         refresh();
     }
 	
@@ -73,10 +80,6 @@ public class SubmissionsListFragment extends ListFragment implements LoaderManag
 
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		_cursorAdapter.swapCursor(null);		
-	}
-	
-	public void setChallengeId(long challengeId){
-		_challengeId = challengeId;
 	}
 
 }
