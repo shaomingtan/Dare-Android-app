@@ -1,7 +1,6 @@
 package com.dare.model;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -22,24 +21,21 @@ import android.text.TextUtils;
 import android.util.Log;
 
 public class ChallengeProvider extends ContentProvider {
-
-	// Used for the UriMacher
-	private static final int CHALLENGES = 10;
-	private static final int CHALLENGE_ID = 20;	
-
+		
 	private static final String BASE_PATH = "challenges";
-	public static final Uri CONTENT_URI = Uri.parse("content://" + Constants.CONTENT_PROVIDER_AUTHORITY + "/" + BASE_PATH);
+	public static final Uri CONTENT_URI = Uri.parse("content://" + Constants.CHALLENGE_PROVIDER_AUTHORITY + "/" + BASE_PATH);
 
 	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/challenges";
 	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/challenge";
 
+	// UriMatcher setup
+	private static final int CHALLENGES = 10;
+	private static final int CHALLENGE_ID = 20;
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static {
-		sURIMatcher.addURI(Constants.CONTENT_PROVIDER_AUTHORITY, BASE_PATH, CHALLENGES);
-		sURIMatcher.addURI(Constants.CONTENT_PROVIDER_AUTHORITY, BASE_PATH + "/#", CHALLENGE_ID);
-	}
-	
-	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		sURIMatcher.addURI(Constants.CHALLENGE_PROVIDER_AUTHORITY, BASE_PATH, CHALLENGES);
+		sURIMatcher.addURI(Constants.CHALLENGE_PROVIDER_AUTHORITY, BASE_PATH + "/#", CHALLENGE_ID);
+	}		
 	
 	@Override
 	public boolean onCreate() {				
@@ -118,8 +114,7 @@ public class ChallengeProvider extends ContentProvider {
 	}
 
 	@Override
-	public Cursor query(Uri uri, String[] projection, String selection,
-			String[] selectionArgs, String sortOrder) {
+	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
@@ -131,15 +126,15 @@ public class ChallengeProvider extends ContentProvider {
 
 		int uriType = sURIMatcher.match(uri);
 		switch (uriType) {
-		case CHALLENGES:
-			break;
-		case CHALLENGE_ID:
-			// Adding the ID to the original query
-			queryBuilder.appendWhere(ChallengeTable.COLUMN_ID + "="
-					+ uri.getLastPathSegment());
-			break;
-		default:
-			throw new IllegalArgumentException("Unknown URI: " + uri);
+			case CHALLENGES:
+				break;
+			case CHALLENGE_ID:
+				// Adding the ID to the original query
+				queryBuilder.appendWhere(ChallengeTable.COLUMN_ID + "="
+						+ uri.getLastPathSegment());
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 
 		SQLiteDatabase db = DareDbHelper.getDb();
@@ -156,20 +151,7 @@ public class ChallengeProvider extends ContentProvider {
 	public String getType(Uri uri) {
 		//not worrying about MIME type right now
 		return null;
-	}
-	
-	private void checkColumns(String[] projection) {
-		String[] available = { ChallengeTable.COLUMN_ID, ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION };
-		
-		if (projection != null) {
-			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
-			HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(available));
-			// Check if all columns which are requested are available
-			if (!availableColumns.containsAll(requestedColumns)) {
-				throw new IllegalArgumentException("Unknown columns in projection");
-			}
-		}
-	}
+	}		
 	
 	public static Date challengeExists(long challengeID)
 	{
@@ -186,7 +168,7 @@ public class ChallengeProvider extends ContentProvider {
 			{
 				try {					
 					String dateStr = cursor.getString(0);
-					lastUpdated = ChallengeProvider.dateFormatter.parse(dateStr);
+					lastUpdated = Constants.DARE_DATE_FORMATTER.parse(dateStr);
 				} catch (ParseException e) {
 					Log.e(ChallengeTable.class.toString(), "DateParseIssue: " + e.toString());
 				}
@@ -194,6 +176,19 @@ public class ChallengeProvider extends ContentProvider {
 		}
 		
 		return lastUpdated;
+	}
+	
+	private void checkColumns(String[] projection) {
+		String[] available = { ChallengeTable.COLUMN_ID, ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION };
+		
+		if (projection != null) {
+			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
+			HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(available));
+			// Check if all columns which are requested are available
+			if (!availableColumns.containsAll(requestedColumns)) {
+				throw new IllegalArgumentException("Unknown columns in projection");
+			}
+		}
 	}
 	
 	public static ContentValues challengeToContentValues(Challenge challenge){

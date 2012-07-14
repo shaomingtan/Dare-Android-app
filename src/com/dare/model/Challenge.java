@@ -17,13 +17,11 @@ public class Challenge  {
 	private String _created_at;
 	private String _updated_at;
 	
-	public Challenge()
-	{
+	public Challenge(){
 		_id = -1;
 	}
 	
-	public Challenge(JSONObject obj)
-	{
+	public Challenge(JSONObject obj){
 		_id = -1;
 		
 		try{
@@ -35,18 +33,7 @@ public class Challenge  {
 			_updated_at = obj.getString(UPDATED_AT_KEY);
 		} catch (Exception ex) {}				
 	}
-	
-	public boolean isValid(){
-		if (_id == -1){ return false;}
-		else if (_brand == null){ return false;}
-		else if (_title == null){ return false;}
-		else if (_description == null){ return false;}
-		else if (_created_at == null){ return false;}
-		else if (_updated_at == null){ return false;}
 		
-		return true;
-	}
-	
 	public long getId(){
 		return _id;
 	}

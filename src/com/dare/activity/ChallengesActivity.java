@@ -35,7 +35,7 @@ public class ChallengesActivity extends FragmentActivity {
     	
     	NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
     	if (networkInfo != null && networkInfo.isConnected()) {
-    		_listFragment.refreshChallenges();            
+    		_listFragment.refresh();            
         } 
     	else {
             //TODO show error

@@ -29,7 +29,7 @@ public class SubmissionTable {
 	}
 
 	public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		Log.w(ChallengeTable.class.getName(),
+		Log.w(SubmissionTable.class.getName(),
 				"Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 		SubmissionTable.onCreate(db);

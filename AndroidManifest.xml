@@ -38,7 +38,12 @@
 
         <provider
             android:name=".model.ChallengeProvider"
-            android:authorities="com.dare.contentprovider" >
+            android:authorities="com.dare.content.challenges" >
+        </provider>
+        
+        <provider
+            android:name=".model.SubmissionProvider"
+            android:authorities="com.dare.content.submissions" >
         </provider>
         
     </application>

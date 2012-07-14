@@ -2,28 +2,28 @@ package com.dare.activity;
 
 import com.dare.R;
 import com.dare.db.ChallengeTable;
+import com.dare.fragment.SubmissionsListFragment;
 import com.dare.model.Challenge;
 import com.dare.model.ChallengeProvider;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Activity;
 import android.database.Cursor;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.widget.TextView;
 
-public class ChallengeSubmissionsActivity extends Activity {
+public class ChallengeSubmissionsActivity extends FragmentActivity {
 
-	private Challenge 	_challenge;
-	private TextView 	_titleLabel;
+	private Challenge 				_challenge;
+	private TextView 				_titleLabel;
+	private SubmissionsListFragment	_listFragment;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_challenge_submissions);
+        setContentView(R.layout.activity_challenge_submissions);                
         
-        _titleLabel = (TextView) findViewById(R.id.challenge_detail_title);
-
 		Uri challengeUri = null;
         if (savedInstanceState != null) {
         	challengeUri =  (Uri) savedInstanceState.getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);
@@ -33,6 +33,10 @@ public class ChallengeSubmissionsActivity extends Activity {
 			challengeUri = (Uri) extras.getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);			
 		}		
 		loadChallenge(challengeUri);		
+		
+		_titleLabel = (TextView) findViewById(R.id.challenge_detail_title);
+        _listFragment =  (SubmissionsListFragment) getSupportFragmentManager().findFragmentById(R.id.list_challenge_submissions);
+        _listFragment.setChallengeId(_challenge.getId());
     }
     
     public void loadChallenge(Uri challengeUri)

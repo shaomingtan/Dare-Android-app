@@ -11,8 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.dare.Constants;
-import com.dare.fragment.ChallengesListFragment;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
@@ -45,13 +43,13 @@ public class ChallengeController {
     		updateDbWithRefreshResponse(new JSONArray(response));
     	}
     	catch (IOException ioEx) {
-    		Log.e(ChallengesListFragment.class.toString(), ("IOException Fetching Challenges: " + ioEx.toString()));
+    		Log.e(ChallengeController.class.toString(), ("IOException Fetching Challenges: " + ioEx.toString()));
     	}    	
     	catch (JSONException jsonEx) {
-    		Log.e(ChallengesListFragment.class.toString(), ("JSONException Fetching Challenges: " + jsonEx.toString()));
+    		Log.e(ChallengeController.class.toString(), ("JSONException Fetching Challenges: " + jsonEx.toString()));
     	}
     	catch (Exception ex) {
-    		Log.e(ChallengesListFragment.class.toString(), ("Exception Fetching Challenges: " + ex.toString()));
+    		Log.e(ChallengeController.class.toString(), ("Exception Fetching Challenges: " + ex.toString()));
     	}
     }
 		
@@ -71,7 +69,7 @@ public class ChallengeController {
 						_context.getContentResolver().insert(ChallengeProvider.CONTENT_URI, challengeValues);						
 					}
 					else{
-						Date currentUpdate = ChallengeProvider.dateFormatter.parse(challenge.getUpdatedAt());
+						Date currentUpdate = Constants.DARE_DATE_FORMATTER.parse(challenge.getUpdatedAt());
 						if (currentUpdate.after(lastUpdate)){
 							Uri updateUri = Uri.withAppendedPath(ChallengeProvider.CONTENT_URI, String.valueOf(challengeId));
 							_context.getContentResolver().update(updateUri, challengeValues, null, null);

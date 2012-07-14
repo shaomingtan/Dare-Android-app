@@ -11,7 +11,7 @@ public class DareDbHelper extends SQLiteOpenHelper{
 	
 	private static DareDbHelper _db;
 	
-	// This should only be initialized once by the main application
+	// NOTE: This should only be initialized once by the main application
 	public DareDbHelper(DareApplication application) {
 		super(application, DATABASE_NAME, null, DATABASE_VERSION);
 		_db = this;

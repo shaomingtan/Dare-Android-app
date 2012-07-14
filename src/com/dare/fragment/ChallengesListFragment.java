@@ -1,5 +1,6 @@
 package com.dare.fragment;
 
+import com.dare.Constants;
 import com.dare.R;
 import com.dare.activity.ChallengeSubmissionsActivity;
 import com.dare.db.ChallengeTable;
@@ -38,13 +39,13 @@ public class ChallengesListFragment extends ListFragment implements LoaderManage
         setListAdapter(_cursorAdapter);
         
         // Prepare the loader.  Either re-connect with an existing one, or start a new one.
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(Constants.LOADER_CHALLENGES, null, this);
         
-        refreshChallenges();
+        refresh();
     }
         
     // Uses AsyncTask subclass to download the challenge feed from the server
-    public void refreshChallenges() {    	
+    public void refresh() {    	
     	new RefreshTask().execute();                    
     }
     
