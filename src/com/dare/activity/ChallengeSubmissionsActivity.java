@@ -6,11 +6,16 @@ import com.dare.fragment.SubmissionsListFragment;
 import com.dare.model.Challenge;
 import com.dare.model.ChallengeProvider;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
+import android.view.View;
 import android.widget.TextView;
 
 public class ChallengeSubmissionsActivity extends FragmentActivity {
@@ -61,6 +66,24 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
     			_titleLabel.setText(_challenge.getTitle());
     		}
     	}
+    }
+    
+    public void refresh(View view) {
+    	ConnectivityManager connMgr = (ConnectivityManager)     	
+    			getSystemService(Context.CONNECTIVITY_SERVICE);
+    	
+    	NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+    	if (networkInfo != null && networkInfo.isConnected()) {
+    		_listFragment.refresh();            
+        } 
+    	else {
+            //TODO show error
+        }
+    }
+    
+    public void launchCamera(View view) {
+    	Intent i = new Intent(this, CameraActivity.class);		
+		startActivity(i);
     }
 
     @Override
