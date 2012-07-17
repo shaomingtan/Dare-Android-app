@@ -31,11 +31,12 @@ public class SubmissionController {
 	}
 
 	public void fetchSubmissionsForChallengeId(long challengeId) {
+		HttpURLConnection conn;
 		try {
 			String urlString = (Constants.DARE_SERVICE_URL + "/challenges/"
 					+ challengeId + "/submissions.json");
 			URL url = new URL(urlString);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(10000 /* milliseconds */);
 			conn.setConnectTimeout(25000 /* milliseconds */);
 			conn.setRequestMethod("GET");
@@ -48,15 +49,12 @@ public class SubmissionController {
 			String response = new java.util.Scanner(stream).useDelimiter("\\A").next();
 			updateDbWithRefreshResponse(new JSONArray(response));
 		} catch (IOException ioEx) {
-			Log.e(SubmissionController.class.toString(),
-					("IOException Fetching Submissions: " + ioEx.toString()));
+			Log.e(SubmissionController.class.toString(), ("IOException Fetching Submissions: " + ioEx.toString()));
 		} catch (JSONException jsonEx) {
-			Log.e(SubmissionController.class.toString(),
-					("JSONException Fetching Submissions: " + jsonEx.toString()));
+			Log.e(SubmissionController.class.toString(), ("JSONException Fetching Submissions: " + jsonEx.toString()));
 		} catch (Exception ex) {
-			Log.e(SubmissionController.class.toString(),
-					("Exception Fetching Submissions: " + ex.toString()));
-		}
+			Log.e(SubmissionController.class.toString(), ("Exception Fetching Submissions: " + ex.toString()));
+		} 		
 	}
 
 	private void updateDbWithRefreshResponse(JSONArray response) {
