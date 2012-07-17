@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DareDbHelper extends SQLiteOpenHelper{
 	private static final String DATABASE_NAME = "dare.db";
-	private static final int 	DATABASE_VERSION = 2;
+	private static final int 	DATABASE_VERSION = 3;
 	
 	private static DareDbHelper _db;
 	

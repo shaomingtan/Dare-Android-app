@@ -24,20 +24,26 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_challenge_submissions);                
         
-		_titleLabel = (TextView) findViewById(R.id.challenge_detail_title);
-        
-        _listFragment = new SubmissionsListFragment();
-        _listFragment.setArguments(getIntent().getExtras());        
-        getSupportFragmentManager().beginTransaction().add(android.R.id.content, _listFragment).commit();
-        
         Uri challengeUri = null;
+        long challengeId = -1;
         if (savedInstanceState != null) {
         	challengeUri =  (Uri) savedInstanceState.getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);
+        	challengeId =  savedInstanceState.getLong(ChallengeProvider.CONTENT_ID_KEY);
         }        
         Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			challengeUri = (Uri) extras.getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);			
-		}		
+			challengeUri = (Uri) extras.getParcelable(ChallengeProvider.CONTENT_ITEM_TYPE);
+			challengeId =  extras.getLong(ChallengeProvider.CONTENT_ID_KEY);
+		}
+
+		_titleLabel = (TextView) findViewById(R.id.challenge_detail_title);	
+		_titleLabel.setBackgroundResource(R.color.gRed);
+		
+		_listFragment = new SubmissionsListFragment();
+        _listFragment.setArguments(getIntent().getExtras());        
+        _listFragment.setChallengeId(challengeId);
+        getSupportFragmentManager().beginTransaction().add(R.id.challenge_detail_linear, _listFragment).commit();
+		
 		loadChallenge(challengeUri);
     }
     

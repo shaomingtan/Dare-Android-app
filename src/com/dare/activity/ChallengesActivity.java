@@ -29,7 +29,7 @@ public class ChallengesActivity extends FragmentActivity {
         return true;
     }
    
-    public void refreshChallenges(View view) {
+    public void refresh(View view) {
     	ConnectivityManager connMgr = (ConnectivityManager)     	
     			getSystemService(Context.CONNECTIVITY_SERVICE);
     	

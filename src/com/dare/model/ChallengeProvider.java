@@ -27,7 +27,8 @@ public class ChallengeProvider extends ContentProvider {
 
 	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/challenges";
 	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/challenge";
-
+	public static final String CONTENT_ID_KEY =  "challengeId";
+	
 	// UriMatcher setup
 	private static final int CHALLENGES = 10;
 	private static final int CHALLENGE_ID = 20;

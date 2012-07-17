@@ -7,7 +7,9 @@ public class SubmissionTable {
 	public static final String 	TABLE_NAME = "submissions";
 	public static final String 	COLUMN_ID = "_id";
 	public static final String 	COLUMN_CHALLENGE_ID = "challenge_id";
+	public static final String 	COLUMN_CONTENT_URL = "content_url";
 	public static final String 	COLUMN_DESCRIPTION = "description";
+	public static final String 	COLUMN_LOCAL_PATH = "local_path";
 	public static final String 	COLUMN_CREATED_AT = "created_at";
 	public static final String 	COLUMN_UPDATED_AT = "updated_at";	
 	public static final String 	INDEX_CHALLENGE = "challengeIndex";
@@ -16,7 +18,9 @@ public class SubmissionTable {
 			+ TABLE_NAME 
 			+ "(" + COLUMN_ID + " integer primary key, " 
 			+ COLUMN_CHALLENGE_ID + " INTEGER REFERENCES " + ChallengeTable.TABLE_NAME + " ON DELETE CASCADE, "
+			+ COLUMN_CONTENT_URL + " text, "
 			+ COLUMN_DESCRIPTION + " text, "
+			+ COLUMN_LOCAL_PATH + " text, "
 			+ COLUMN_CREATED_AT + " text, "
 			+ COLUMN_UPDATED_AT + " text"
 			+ ");";	

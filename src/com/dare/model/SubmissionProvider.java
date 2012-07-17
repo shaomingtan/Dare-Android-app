@@ -123,8 +123,7 @@ public class SubmissionProvider extends ContentProvider {
 				break;
 			case SUBMISSION_ID:
 				// Adding the ID to the original query
-				queryBuilder.appendWhere(SubmissionTable.COLUMN_ID + "="
-						+ uri.getLastPathSegment());
+				queryBuilder.appendWhere(SubmissionTable.COLUMN_ID + "=" + uri.getLastPathSegment());
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -153,7 +152,7 @@ public class SubmissionProvider extends ContentProvider {
 	}
 	
 	private void checkColumns(String[] projection) {
-		String[] available = { SubmissionTable.COLUMN_ID, SubmissionTable.COLUMN_CHALLENGE_ID, SubmissionTable.COLUMN_DESCRIPTION };
+		String[] available = { SubmissionTable.COLUMN_ID, SubmissionTable.COLUMN_CHALLENGE_ID, SubmissionTable.COLUMN_DESCRIPTION, SubmissionTable.COLUMN_CONTENT_URL, SubmissionTable.COLUMN_LOCAL_PATH };
 		
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
@@ -169,7 +168,9 @@ public class SubmissionProvider extends ContentProvider {
 		ContentValues values = new ContentValues();
 		values.put(SubmissionTable.COLUMN_ID, submission.getId());
 		values.put(SubmissionTable.COLUMN_CHALLENGE_ID, submission.getChallengeId());
+		values.put(SubmissionTable.COLUMN_CONTENT_URL, submission.getContentUrl());
 		values.put(SubmissionTable.COLUMN_DESCRIPTION, submission.getDescription());
+		values.put(SubmissionTable.COLUMN_LOCAL_PATH, submission.getLocalPath());
 		values.put(SubmissionTable.COLUMN_CREATED_AT, submission.getCreatedAt());
 		values.put(SubmissionTable.COLUMN_UPDATED_AT, submission.getUpdatedAt());
 		return values;

@@ -85,6 +85,7 @@ public class ChallengesListFragment extends ListFragment implements LoaderManage
 		Intent i = new Intent(getActivity(), ChallengeSubmissionsActivity.class);
 		Uri challengeUri = Uri.parse(ChallengeProvider.CONTENT_URI + "/" + id);
 		i.putExtra(ChallengeProvider.CONTENT_ITEM_TYPE, challengeUri);
+		i.putExtra(ChallengeProvider.CONTENT_ID_KEY, id);
 
 		// Activity returns an result if called with startActivityForResult
 		startActivity(i);
