@@ -13,6 +13,13 @@ final public class Constants {
 	public static final int LOADER_CHALLENGES = 0;
 	public static final int LOADER_SUBMISSIONS = 1;
 	
+	public static final String S3_IMG_BUCKET = "dare-submissions-img";
+	private static final String S3_URL = "http://s3.amazonaws.com";
+	
 	// prevent instantiation
 	private Constants() {}
+	
+	public static String getS3Url(String filename){
+		return (S3_URL + "/" + S3_IMG_BUCKET + "/" + filename);
+	}
 }
