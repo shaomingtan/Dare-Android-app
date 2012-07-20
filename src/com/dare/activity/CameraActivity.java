@@ -1,15 +1,26 @@
 package com.dare.activity;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.cert.Certificate;
 import java.util.UUID;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,12 +46,15 @@ public class CameraActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         
-        _fileUri = getOutputMediaFileUri(); // create a file to save the image
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, _fileUri); // set the image file name
-
-        // start the image capture Intent
-        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+//        _fileUri = getOutputMediaFileUri(); // create a file to save the image
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, _fileUri); // set the image file name
+//
+//        // start the image capture Intent
+//        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        
+        //uploadImage(Uri.parse("/mnt/sdcard/Pictures/Dare/6236a79a-fe80-4757-b627-c49ccb8b4a1d.jpg"));
+        uploadImage(Uri.parse("/mnt/sdcard/Android/data/com.dare/files/submission_imgs/cvs-receipt.jpg"));
     }
 
     @Override
@@ -65,30 +79,36 @@ public class CameraActivity extends Activity {
 
     private void uploadImage(Uri fileUri){    	
     	try{
+    		int responseCode = -1;
+    		
     		String imgPath = fileUri.getPath();
     		String imgName = fileUri.getLastPathSegment();
     		File imgFile = new File(imgPath);
     		FileInputStream fileInputStream = new FileInputStream(imgFile);
     		    		
-    		String urlString = ("https://dare_submissions.s3.amazonaws.com/");
+    		String urlString = ("https://dare-submissions-img.s3.amazonaws.com/");
 			URL url = new URL(urlString);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();			
+			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();			
 			conn.setRequestMethod("POST");			
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
-			conn.setUseCaches(false);
-			conn.setRequestProperty("Connection", "Keep-Alive");
-			conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+FORM_BOUNDARY);
-			//conn.setChunkedStreamingMode(0);
+			Log.d(CameraActivity.class.toString(), String.valueOf(conn.getDoOutput()));
+			conn.setUseCaches(false);			
+			conn.setRequestProperty("Connection","Keep-Alive"); 
+			conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+FORM_BOUNDARY);									
+			conn.setReadTimeout(60000);			
+			conn.setSSLSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
+			conn.setHostnameVerifier(new AllowAllHostnameVerifier() );			
+			conn.setChunkedStreamingMode(0);												
 			
-			DataOutputStream outputStream = new DataOutputStream(conn.getOutputStream());
+			DataOutputStream outputStream = new DataOutputStream(conn.getOutputStream());						
 			
 			outputStream.writeBytes(encodeFormData("key", "${filename}"));
 			outputStream.writeBytes(encodeFormData("AWSAccessKeyId", "AKIAJVSVARKT3MJSUHOA"));
 			outputStream.writeBytes(encodeFormData("acl", "public-read"));
-			outputStream.writeBytes(encodeFormData("policy", "eyJleHBpcmF0aW9uIjoiMjAxNS0wMS0wMVQwMDowMDowMFoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJkYXJlX3N1Ym1pc3Npb25zIn0sWyJzdGFydHMtd2l0aCIsIiRrZXkiLCIiXSx7ImFjbCI6InB1YmxpYy1yZWFkIn0sWyJzdGFydHMtd2l0aCIsIiRDb250ZW50LVR5cGUiLCIiXSxbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwwLDIwOTcxNTJdXX0="));
-			outputStream.writeBytes(encodeFormData("signature", "Nl19buiUSOItGVfKAh0ngz4SwPE="));
-			outputStream.writeBytes(encodeFormData("Content-Type", "image/jpeg"));
+			outputStream.writeBytes(encodeFormData("policy", "eyJleHBpcmF0aW9uIjoiMjAxNS0wMS0wMVQwMDowMDowMFoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJkYXJlLXN1Ym1pc3Npb25zLWltZyJ9LFsic3RhcnRzLXdpdGgiLCIka2V5IiwiIl0seyJhY2wiOiJwdWJsaWMtcmVhZCJ9LFsic3RhcnRzLXdpdGgiLCIkQ29udGVudC1UeXBlIiwiIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCwyMDk3MTUyXV19"));
+			outputStream.writeBytes(encodeFormData("signature", "FUVg7VW+STtE+F8Eew5dhgAr6oU="));
+			outputStream.writeBytes(encodeFormData("Content-Type", "image/jpeg"));						
 			
 			outputStream.writeBytes(FORM_FIELD_SEPERATOR);
 			outputStream.writeBytes("Content-Disposition: form-data; name=\"file\";filename=\"" + imgName +"\"" + FORM_LINE_END );
@@ -114,17 +134,39 @@ public class CameraActivity extends Activity {
 			}
 			
 			outputStream.writeBytes(FORM_LINE_END + FORM_CDATA_SEPERATOR + FORM_BOUNDARY + FORM_CDATA_SEPERATOR + FORM_LINE_END);
-
-			// Responses from the server (code and message)
-			int serverResponseCode = conn.getResponseCode();
-			String serverResponseMessage = conn.getResponseMessage();
-
 			fileInputStream.close();
 			outputStream.flush();
-			outputStream.close();		     			
+			
+//			conn.connect();
+						
+			responseCode = conn.getResponseCode();			
+			Log.d(CameraActivity.class.toString(), "code: " + responseCode);
+			
+			String response = conn.getResponseMessage();
+			InputStream stream = conn.getInputStream();
+			
+			
+			BufferedReader bufIn = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String sResponse;
+            StringBuilder s = new StringBuilder();
+
+            //bufIn is null as error as closed urlcConnection
+            while ((sResponse = bufIn.readLine()) != null) {
+                s = s.append(sResponse);
+            }
+            
+            Log.d("foo",s.toString());
+            
+            outputStream.close();
+    	}    	
+    	catch(SSLException sslEx){
+    		Log.e(CameraActivity.class.toString(), sslEx.getLocalizedMessage());
     	}
-    	catch(IOException ioEx){
-    		Log.e(CameraActivity.class.toString(), ioEx.toString());
+//    	catch(IOException ioEx){
+//    		Log.e(CameraActivity.class.toString(), ioEx.toString());
+//    	}
+    	catch(Exception ex){
+    		//Log.e(CameraActivity.class.toString(), ex.toString());
     	}
     }
     
