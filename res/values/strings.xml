@@ -5,6 +5,9 @@
     <string name="button_refresh">Refresh</string>
     <string name="button_camera">Camera</string>
     <string name="hello_world">Hello world!</string>
+    <string name="User_name_submissions">User Name</string>
+    <string name="Submission_Points">300 PTS</string>
+    <string name="Submission_Comments">Love this photo!</string>
     <string name="title_activity_challenges">Dare | Challenges</string>
     <string name="no_challenges">No challenges to display</string>
     <string name="title_activity_challenge_submissions">Submissions</string>
