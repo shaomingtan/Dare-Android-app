@@ -90,7 +90,7 @@ public class CameraActivity extends Activity {
     		submission.setLocalPath(imgPath);
     		
     		SubmissionController subController = new SubmissionController(this);
-    		subController.uploadSubmission(submission)
+    		subController.uploadSubmission(submission);
     	}
     	catch (AmazonClientException awsClientEx){
     		Log.e(CameraActivity.class.toString(), awsClientEx.getLocalizedMessage());
