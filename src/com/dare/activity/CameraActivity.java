@@ -21,6 +21,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.dare.Constants;
 import com.dare.R;
 import com.dare.model.Submission;
+import com.dare.model.SubmissionController;
 
 public class CameraActivity extends Activity {
 
@@ -86,7 +87,10 @@ public class CameraActivity extends Activity {
     		Submission submission = new Submission();
     		submission.setContentUrl(url);
     		submission.setDescription("hardcoded description");
-    		submission.setLocalPath(imgPath);    		
+    		submission.setLocalPath(imgPath);
+    		
+    		SubmissionController subController = new SubmissionController(this);
+    		subController.uploadSubmission(submission)
     	}
     	catch (AmazonClientException awsClientEx){
     		Log.e(CameraActivity.class.toString(), awsClientEx.getLocalizedMessage());
