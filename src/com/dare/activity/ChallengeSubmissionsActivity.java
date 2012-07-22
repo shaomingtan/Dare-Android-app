@@ -82,7 +82,8 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
     }
     
     public void launchCamera(View view) {
-    	Intent i = new Intent(this, CameraActivity.class);		
+    	Intent i = new Intent(this, CameraActivity.class);	
+    	i.putExtra(ChallengeProvider.CONTENT_ID_KEY, _challenge.getId());
 		startActivity(i);
     }
 

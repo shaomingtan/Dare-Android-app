@@ -20,24 +20,26 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.dare.Constants;
 import com.dare.R;
+import com.dare.model.ChallengeProvider;
 import com.dare.model.Submission;
 import com.dare.model.SubmissionController;
 
 public class CameraActivity extends Activity {
 
-	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-	
-	private static final String FORM_CDATA_SEPERATOR = "--";
-	private static final String FORM_BOUNDARY =  "*****AaB03x";
-	private static final String FORM_LINE_END = "\n";
-	private static final String FORM_FIELD_SEPERATOR = FORM_CDATA_SEPERATOR + FORM_BOUNDARY + FORM_LINE_END;	
+	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;	
 	
 	private Uri _fileUri;
+	private long _challenge_id;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        
+        Bundle extras = getIntent().getExtras();
+		if (extras != null) {			
+			_challenge_id =  extras.getLong(ChallengeProvider.CONTENT_ID_KEY);
+		}
         
         _fileUri = getOutputMediaFileUri(); // create a file to save the image
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -88,6 +90,7 @@ public class CameraActivity extends Activity {
     		submission.setContentUrl(url);
     		submission.setDescription("hardcoded description");
     		submission.setLocalPath(imgPath);
+    		submission.setChallengeId(_challenge_id);
     		
     		SubmissionController subController = new SubmissionController(this);
     		subController.uploadSubmission(submission);

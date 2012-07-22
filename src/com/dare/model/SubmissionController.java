@@ -1,10 +1,12 @@
 package com.dare.model;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,6 +16,7 @@ import java.util.Date;
 import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -133,6 +136,44 @@ public class SubmissionController {
 	
 	
 	public void uploadSubmission(Submission submission){
-		
+		try{
+			JSONObject submissionJSON = submission.toJson();
+			String postBody = submissionJSON.toString();
+			byte[] postBytes = postBody.getBytes("UTF-8");
+			
+			String urlString = (Constants.DARE_SERVICE_URL + "/challenges/" + submission.getChallengeId() + "/submissions.json");
+			URL url = new URL(urlString);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setReadTimeout(10000 /* milliseconds */);
+			conn.setConnectTimeout(25000 /* milliseconds */);
+			conn.setRequestMethod("POST");
+			conn.setDoInput(true);
+			conn.setDoOutput(true);
+			conn.addRequestProperty("Content-type", "application/json");
+			conn.addRequestProperty("Accept", "application/json");
+			
+			OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+		    out.write(postBytes);
+		    out.flush();
+
+			// Starts the query
+			conn.connect();
+			int responseCode = conn.getResponseCode();
+			InputStream stream = conn.getInputStream();			
+			String response = new java.util.Scanner(stream).useDelimiter("\\A").next();
+			out.close();
+			stream.close();
+			
+			JSONObject responseObject = new JSONObject(response);
+			Submission responseSubmission = new Submission(responseObject);
+			responseSubmission.setLocalPath(submission.getLocalPath());
+			ContentValues submissionValues = SubmissionProvider.submissionToContentValues(responseSubmission);
+			_context.getContentResolver().insert(SubmissionProvider.CONTENT_URI, submissionValues);
+						
+		}
+		catch (IOException ioEx){
+		}
+		catch (JSONException jsonEx){
+		}
 	}
 }

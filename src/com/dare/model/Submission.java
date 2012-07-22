@@ -1,5 +1,6 @@
 package com.dare.model;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
@@ -51,6 +52,27 @@ public class Submission {
 			}
 		}
 		return response;
+	}
+	
+	public JSONObject toJson(){
+		JSONObject rootObj = new JSONObject();
+		JSONObject submissionObj = new JSONObject();
+		
+		try{
+			if (_id != -1){
+				submissionObj.put(ID_KEY, _id);
+			}
+			submissionObj.put(CHALLENGE_ID_KEY, _challenge_id);
+			submissionObj.put(CONTENT_URL_KEY, _content_url);
+			submissionObj.put(DESCRIPTION_KEY, _description);			
+			
+			rootObj.put("submission", submissionObj);
+		}
+		catch(JSONException jsonEx){
+			return null;
+		}
+		
+		return rootObj;
 	}
 	
 	public long getId(){
