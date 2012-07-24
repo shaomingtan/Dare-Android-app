@@ -2,18 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-
+    android:orientation="vertical" 
+    android:background="@drawable/appbackground" >
+    
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="refresh"
-        android:text="@string/button_refresh" />
+        android:text="@string/button_refresh" />    
     
     <fragment android:name="com.dare.fragment.ChallengesListFragment"
             android:id="@+id/list_challenges_main"
             android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="0dip" />    
+            android:layout_height="0dip" 
+            android:divider="@android:color/transparent"
+            android:dividerHeight="8dp"/>    
 
 </LinearLayout>
