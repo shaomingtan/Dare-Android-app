@@ -159,17 +159,22 @@ public class SubmissionController {
 			// Starts the query
 			conn.connect();
 			int responseCode = conn.getResponseCode();
-			InputStream stream = conn.getInputStream();			
-			String response = new java.util.Scanner(stream).useDelimiter("\\A").next();
-			out.close();
-			stream.close();
 			
-			JSONObject responseObject = new JSONObject(response);
-			Submission responseSubmission = new Submission(responseObject);
-			responseSubmission.setLocalPath(submission.getLocalPath());
-			ContentValues submissionValues = SubmissionProvider.submissionToContentValues(responseSubmission);
-			_context.getContentResolver().insert(SubmissionProvider.CONTENT_URI, submissionValues);
-						
+			if (responseCode == 200){
+				InputStream stream = conn.getInputStream();			
+				String response = new java.util.Scanner(stream).useDelimiter("\\A").next();
+				out.close();
+				stream.close();
+				
+				JSONObject responseObject = new JSONObject(response);
+				Submission responseSubmission = new Submission(responseObject);
+				responseSubmission.setLocalPath(submission.getLocalPath());
+				ContentValues submissionValues = SubmissionProvider.submissionToContentValues(responseSubmission);
+				_context.getContentResolver().insert(SubmissionProvider.CONTENT_URI, submissionValues);
+			}
+			else{
+				// TODO handle server errors
+			}
 		}
 		catch (IOException ioEx){
 		}

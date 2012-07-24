@@ -1,35 +1,43 @@
 package com.dare.activity;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.dare.Constants;
 import com.dare.R;
 import com.dare.model.ChallengeProvider;
 import com.dare.model.Submission;
 import com.dare.model.SubmissionController;
+import com.dare.view.CameraPreview;
 
-public class CameraActivity extends Activity {
-
-	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;	
+public class CameraActivity extends Activity implements PictureCallback {		
 	
 	private Uri _fileUri;
 	private long _challenge_id;
+	
+	private Camera _camera;
+	private CameraPreview _preview;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,15 +49,13 @@ public class CameraActivity extends Activity {
 			_challenge_id =  extras.getLong(ChallengeProvider.CONTENT_ID_KEY);
 		}
         
+		_camera = getCameraInstance();	
+		_camera.setDisplayOrientation(90);
         _fileUri = getOutputMediaFileUri(); // create a file to save the image
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, _fileUri); // set the image file name
-
-        // start the image capture Intent
-        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-        
-        //uploadImage(Uri.parse("/mnt/sdcard/Pictures/Dare/6236a79a-fe80-4757-b627-c49ccb8b4a1d.jpg"));
-        //uploadImage(Uri.parse("/mnt/sdcard/Android/data/com.dare/files/submission_imgs/cvs-receipt.jpg"));
+                
+        _preview = new CameraPreview(this, _camera);
+        FrameLayout previewFrame = (FrameLayout) findViewById(R.id.camera_preview);
+        previewFrame.addView(_preview);        
     }
 
     @Override
@@ -59,18 +65,35 @@ public class CameraActivity extends Activity {
     }
     
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                // Image captured and saved to fileUri specified in the Intent
-            	uploadImage(_fileUri);
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
-            } else {
-                // Image capture failed, advise user
-            }
-        }
+    protected void onPause() {
+        super.onPause();
+        releaseCamera();
     }
+    
+    public void takePicture(View v){
+    	_camera.takePicture(null, null, this);
+    }
+    
+    public void onPictureTaken(byte[] data, Camera camera) {		
+        try {
+        	File pictureFile = new File(new URI(_fileUri.toString()));
+        	FileOutputStream fos = new FileOutputStream(pictureFile);
+            fos.write(data);
+            fos.flush();
+            fos.close();
+        } catch (URISyntaxException e) {
+            Log.d(CameraActivity.class.toString(), "Syntax Exception: " + e.getMessage());
+        } catch (FileNotFoundException e) {
+            Log.d(CameraActivity.class.toString(), "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(CameraActivity.class.toString(), "Error accessing file: " + e.getMessage());
+        }
+        
+        releaseCamera();
+        
+        //TODO take them to the confirmation screen, but for now we'll just start uploading        
+        uploadImage(_fileUri);        
+	}
 
     private void uploadImage(Uri fileUri){    	
     	try{
@@ -82,7 +105,7 @@ public class CameraActivity extends Activity {
     		AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials("AKIAJVSVARKT3MJSUHOA", "JblOe9ab7ZDa98Ei0PA2tT/Z3u5RpSoWopXyg4ss"));
     		PutObjectRequest request = new PutObjectRequest(Constants.S3_IMG_BUCKET, imgName, imgFile);  
     		request.setCannedAcl(CannedAccessControlList.PublicRead);
-    		PutObjectResult result = s3Client.putObject(request);  		
+    		s3Client.putObject(request);  		
     		
     		String url = Constants.getS3Url(imgName);
     		
@@ -99,7 +122,26 @@ public class CameraActivity extends Activity {
     		Log.e(CameraActivity.class.toString(), awsClientEx.getLocalizedMessage());
     	}    	
     }
-        
+    
+    
+    public static Camera getCameraInstance(){
+        Camera c = null;
+        try {
+            c = Camera.open(); // attempt to get a Camera instance
+        }
+        catch (Exception e){
+            // Camera is not available (in use or does not exist)
+        }
+        return c; // returns null if camera is unavailable
+    }
+    
+    private void releaseCamera(){
+        if (_camera != null){
+        	_camera.release();        // release the camera for other applications
+        	_camera = null;
+        }
+    }
+    
     
     /** Create a file Uri for saving an image or video */
     private static Uri getOutputMediaFileUri(){
@@ -125,4 +167,5 @@ public class CameraActivity extends Activity {
         String uniqueFilename = UUID.randomUUID().toString();
         return new File(submissionDir.getPath() + File.separator + uniqueFilename + ".jpg");
     }
+	
 }
