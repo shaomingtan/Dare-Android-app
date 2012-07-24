@@ -5,36 +5,7 @@
      android:padding="5dp"
      android:background="@drawable/bordersub"
      >
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:orientation="vertical"
-     android:padding="5dp">
-	<TextView
-		android:id="@+id/User_name"
-	    android:layout_width="96dp"
-	    android:layout_height="wrap_content" 
-	    android:layout_marginTop="5dp"
-	    android:textSize="14dp" 
-	    android:text="@string/User_name_submissions"/>
-    
-    <TextView
-	    android:id="@+id/submission_description"
-	    android:layout_width="150dp"
-	    android:layout_height="wrap_content" 
-	    android:layout_marginTop="5dp"
-	    android:textSize="14dp" 
-	    android:layout_below="@id/User_name"/>
 
-	<TextView
-	    android:layout_width="30dp"
-	    android:layout_height="wrap_content" 
-	    android:layout_marginTop="5dp"
-	    android:textSize="14dp" 
-	    android:text="@string/Submission_Points"
-	    android:layout_alignParentRight="true"/>
-</RelativeLayout>
-	
     <ImageView 
         android:id="@+id/submission_image"
 	    android:layout_width="match_parent"
@@ -42,10 +13,11 @@
         />
 
 	<TextView
+		android:id="@+id/submission_description"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content" 
 	    android:layout_marginTop="5dp"
 	    android:textSize="14dp" 
-	    android:text="@string/Submission_Comments"/>
+	    />
     	
 </LinearLayout>
