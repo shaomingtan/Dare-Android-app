@@ -22,6 +22,8 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
 
 	private Challenge 				_challenge;
 	private TextView 				_titleLabel;
+	private TextView 				_descriptionLabel;
+	private TextView 				_brandLabel;
 	private SubmissionsListFragment	_listFragment;
 	
     @Override
@@ -42,7 +44,8 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
 		}
 
 		_titleLabel = (TextView) findViewById(R.id.challenge_detail_title);	
-		_titleLabel.setBackgroundResource(R.color.gRed);
+		_descriptionLabel = (TextView) findViewById(R.id.challenge_detail_description);	
+		_brandLabel = (TextView) findViewById(R.id.challenge_detail_brand);	
 		
 		_listFragment = new SubmissionsListFragment();
         _listFragment.setArguments(getIntent().getExtras());        
@@ -64,6 +67,9 @@ public class ChallengeSubmissionsActivity extends FragmentActivity {
     		
     		if (_challenge != null){
     			_titleLabel.setText(_challenge.getTitle());
+    			_descriptionLabel.setText(_challenge.getDescription());
+    			_brandLabel.setText(_challenge.getBrand());
+    			
     		}
     	}
     }
