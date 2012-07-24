@@ -9,6 +9,10 @@ import java.net.URISyntaxException;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.Bitmap.CompressFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
@@ -76,9 +80,14 @@ public class CameraActivity extends Activity implements PictureCallback {
     
     public void onPictureTaken(byte[] data, Camera camera) {		
         try {
+        	Bitmap bitmapOriginal = BitmapFactory.decodeByteArray(data , 0, data .length);
+        	Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOriginal, 0, 0, CameraPreview.PIC_WIDTH, CameraPreview.PIC_HEIGHT, matrix, true);            
+        	
         	File pictureFile = new File(new URI(_fileUri.toString()));
-        	FileOutputStream fos = new FileOutputStream(pictureFile);
-            fos.write(data);
+        	FileOutputStream fos = new FileOutputStream(pictureFile);            
+        	resizedBitmap.compress(CompressFormat.JPEG, 90, fos);        	
             fos.flush();
             fos.close();
         } catch (URISyntaxException e) {
