@@ -33,7 +33,6 @@ import com.dare.Constants;
 import com.dare.R;
 import com.dare.model.ChallengeProvider;
 import com.dare.model.Submission;
-import com.dare.model.SubmissionController;
 import com.dare.view.CameraPreview;
 
 public class CameraActivity extends Activity implements PictureCallback {		
@@ -106,13 +105,13 @@ public class CameraActivity extends Activity implements PictureCallback {
         new UploadOnNewThread ().execute(_fileUri);
 	}
 
-    private class UploadOnNewThread extends AsyncTask<Uri, Void, Submission> {
+    private class UploadOnNewThread extends AsyncTask<Uri, Void, String> {
     	@Override
-        protected Submission doInBackground(Uri... fileUri) {
-    		Submission submission = new Submission();
+        protected String doInBackground(Uri... fileUri) {
+    		String response = "";
     		try {
-    			String imgPath = _fileUri.getPath();
-        		String imgName = _fileUri.getLastPathSegment();
+    			String imgPath = fileUri[0].getPath();
+        		String imgName = fileUri[0].getLastPathSegment();
         		File imgFile = new File(imgPath);
 
         		
@@ -122,34 +121,27 @@ public class CameraActivity extends Activity implements PictureCallback {
         		s3Client.putObject(request);
         		
         		String url = Constants.getS3Url(imgName);
-        		
-        		
+
+        		Submission submission = new Submission();
         		submission.setContentUrl(url);
         		submission.setDescription("hardcoded description");
         		submission.setLocalPath(imgPath);
         		submission.setChallengeId(_challenge_id);
         		
+        		SubmissionController subController = new SubmissionController(this);
+        		subController.uploadSubmission(submission);
+        		
     		} catch (AmazonClientException awsClientEx){
         		Log.e(CameraActivity.class.toString(), awsClientEx.getLocalizedMessage());
     		}
-    	return submission;
+    	return response;
     	}
     	
     	@Override
-        protected void onPostExecute(Submission submission) {
-    		uploadImage(submission);
+        protected void onPostExecute(String response) {
         }
     }
-    
-    private void uploadImage(Submission submission){    	
-    	try{
-    		SubmissionController subController = new SubmissionController(this);
-    		subController.uploadSubmission(submission);
-    	}
-    	catch (AmazonClientException awsClientEx){
-    		Log.e(CameraActivity.class.toString(), awsClientEx.getLocalizedMessage());
-    	}    	
-    }
+ 
     
     
     public static Camera getCameraInstance(){

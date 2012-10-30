@@ -133,8 +133,7 @@ public class SubmissionController {
     		Log.e(SubmissionController.class.toString(), ("IOException downloading submission content: " + ioEx.toString()));
     	}		
 	}
-	
-	
+		
 	public void uploadSubmission(Submission submission){
 		try{
 			JSONObject submissionJSON = submission.toJson();
