@@ -1,15 +1,16 @@
 package com.dare.activity;
 
-import com.dare.R;
-import com.dare.fragment.ChallengesListFragment;
-
+import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.content.Context;
+import android.os.StrictMode;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
-import android.support.v4.app.FragmentActivity;;
+
+import com.dare.R;
+import com.dare.fragment.ChallengesListFragment;
 
 public class ChallengesActivity extends FragmentActivity {
 
@@ -19,6 +20,8 @@ public class ChallengesActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_challenges);
+        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        //StrictMode.setThreadPolicy(policy);
         
         _listFragment =  (ChallengesListFragment) getSupportFragmentManager().findFragmentById(R.id.list_challenges_main);
     }

@@ -1,22 +1,22 @@
 package com.dare.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
+
 import com.dare.R;
 import com.dare.db.ChallengeTable;
 import com.dare.fragment.SubmissionsListFragment;
 import com.dare.model.Challenge;
 import com.dare.model.ChallengeProvider;
-
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.View;
-import android.widget.TextView;
 
 public class ChallengeSubmissionsActivity extends FragmentActivity {
 
