@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -33,6 +34,7 @@ import com.dare.Constants;
 import com.dare.R;
 import com.dare.model.ChallengeProvider;
 import com.dare.model.Submission;
+import com.dare.model.SubmissionController;
 import com.dare.view.CameraPreview;
 
 public class CameraActivity extends Activity implements PictureCallback {		
@@ -101,47 +103,50 @@ public class CameraActivity extends Activity implements PictureCallback {
         releaseCamera();
         
         //TODO take them to the confirmation screen, but for now we'll just start uploading        
-        //uploadImage(_fileUri);        
-        new UploadOnNewThread ().execute(_fileUri);
+        new UploadOnNewThread (_fileUri).execute(this);
+        finish();
 	}
 
-    private class UploadOnNewThread extends AsyncTask<Uri, Void, String> {
-    	@Override
-        protected String doInBackground(Uri... fileUri) {
-    		String response = "";
-    		try {
-    			String imgPath = fileUri[0].getPath();
-        		String imgName = fileUri[0].getLastPathSegment();
-        		File imgFile = new File(imgPath);
-
-        		
-        		AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials("AKIAJVSVARKT3MJSUHOA", "JblOe9ab7ZDa98Ei0PA2tT/Z3u5RpSoWopXyg4ss"));
-        		PutObjectRequest request = new PutObjectRequest(Constants.S3_IMG_BUCKET, imgName, imgFile);  
-        		request.setCannedAcl(CannedAccessControlList.PublicRead);
-        		s3Client.putObject(request);
-        		
-        		String url = Constants.getS3Url(imgName);
-
-        		Submission submission = new Submission();
-        		submission.setContentUrl(url);
-        		submission.setDescription("hardcoded description");
-        		submission.setLocalPath(imgPath);
-        		submission.setChallengeId(_challenge_id);
-        		
-        		SubmissionController subController = new SubmissionController(this);
-        		subController.uploadSubmission(submission);
-        		
-    		} catch (AmazonClientException awsClientEx){
-        		Log.e(CameraActivity.class.toString(), awsClientEx.getLocalizedMessage());
-    		}
-    	return response;
+    private class UploadOnNewThread extends AsyncTask<Context, Void, Void> {    	
+    	
+    	private Uri fileUri;
+    	
+    	public UploadOnNewThread(Uri fileUri)
+    	{
+    		this.fileUri = fileUri;
     	}
     	
     	@Override
-        protected void onPostExecute(String response) {
-        }
+    	protected Void doInBackground(Context... context) {
+    		//String response = "";
+    		try {
+    		
+    		String imgPath = fileUri.getPath();
+    		String imgName = fileUri.getLastPathSegment();
+    		File imgFile = new File(imgPath);
+
+    		AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials("AKIAJVSVARKT3MJSUHOA", "JblOe9ab7ZDa98Ei0PA2tT/Z3u5RpSoWopXyg4ss"));
+    		PutObjectRequest request = new PutObjectRequest(Constants.S3_IMG_BUCKET, imgName, imgFile);  
+    		request.setCannedAcl(CannedAccessControlList.PublicRead);
+    		s3Client.putObject(request);  		
+    		
+    		String url = Constants.getS3Url(imgName);
+    		
+    		Submission submission = new Submission();
+    		submission.setContentUrl(url);
+    		submission.setDescription("hardcoded description");
+    		submission.setLocalPath(imgPath);
+    		submission.setChallengeId(_challenge_id);
+    		
+    		SubmissionController subController = new SubmissionController(context[0]);
+    		subController.uploadSubmission(submission);
+    	}
+    	catch (AmazonClientException awsClientEx){
+    		Log.e(CameraActivity.class.toString(), awsClientEx.getLocalizedMessage());
+    	}    
+    		return null;
+    	}
     }
- 
     
     
     public static Camera getCameraInstance(){
