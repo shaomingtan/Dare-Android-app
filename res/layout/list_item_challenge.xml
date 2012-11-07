@@ -2,22 +2,21 @@
      android:layout_width="match_parent"
      android:layout_height="wrap_content"
      android:orientation="vertical"
-     android:padding="5dp"
-     android:background="@drawable/borderchallenge" >
+     android:padding="5dp" >
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
      android:layout_height="wrap_content"
      android:orientation="vertical"
-     android:padding="8dp" >
-
-    <ImageView 
-        android:id="@+id/challenge_image"
-        android:src="@drawable/walmartlogo"
-	    android:layout_width="70dp"
-	    android:layout_height="70dp" 
-	    android:layout_alignParentLeft="true"
-	    android:layout_marginRight="8dp" />
+     android:padding="0dp"
+     android:background="@drawable/background" >
+     
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	 android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:orientation="vertical"
+     android:padding="2dp"
+     android:background="#000" >
      
 	<TextView
 	    android:id="@+id/challenge_brand_label"
@@ -25,27 +24,48 @@
 	    android:layout_height="wrap_content" 
 	    android:textSize="18dp" 
 	    android:textColor="#0099CC"
-	    android:layout_toRightOf="@id/challenge_image"
-	    android:layout_marginRight="8dp"/>	
+	    android:layout_marginRight="0dp"/>	
 	             	    
 	<TextView
 	    android:id="@+id/challenge_title"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content" 
-	    android:textSize="15dp" 
-	    android:layout_toRightOf="@id/challenge_image"
+	    android:textSize="15dp"
+	    android:textColor="#FFF" 
 	    android:layout_below="@id/challenge_brand_label"
-	    android:layout_marginRight="8dp" />
-
+	    android:layout_marginRight="0dp" />
+</RelativeLayout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	 android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_alignParentRight="true"
+     android:layout_alignParentBottom="true"
+     android:orientation="vertical"
+     android:padding="2dp"
+     android:background="#90000000" >
+     
 	<TextView
 	    android:id="@+id/challenge_description"
-	    android:layout_width="match_parent"
+	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content" 
 	    android:layout_marginTop="5dp"
-	    android:textSize="12dp" 
-	    android:layout_toRightOf="@id/challenge_image"
-	    android:layout_below="@id/challenge_title"
+	    android:textSize="15dp"
+	    android:textColor="#FFF" 
+	    android:layout_toRightOf="@+id/challenge_reward"
 	    android:layout_marginRight="5dp"/>
+	    
+
+	<TextView
+	    android:id="@+id/challenge_reward"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" 
+	    android:layout_marginTop="5dp"
+	    android:textSize="15dp" 
+	    android:textColor="#0099CC"
+	    android:layout_alignParentLeft="true"
+	    android:layout_marginRight="5dp"/>
+	</RelativeLayout>	    
+	
 </RelativeLayout>
 
 </LinearLayout>

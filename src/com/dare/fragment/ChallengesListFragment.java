@@ -34,8 +34,8 @@ public class ChallengesListFragment extends ListFragment implements LoaderManage
         
         _cursorAdapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.list_item_challenge, null,
-                new String[] {ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_BRAND_NAME,  ChallengeTable.COLUMN_DESCRIPTION },
-                new int[] { R.id.challenge_title, R.id.challenge_brand_label, R.id.challenge_description}, 0);
+                new String[] {ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_BRAND_NAME,  ChallengeTable.COLUMN_DESCRIPTION, ChallengeTable.COLUMN_CHALLENGE_REWARD  },
+                new int[] { R.id.challenge_title, R.id.challenge_brand_label, R.id.challenge_description, R.id.challenge_reward}, 0);
         setListAdapter(_cursorAdapter);
         
         // Prepare the loader.  Either re-connect with an existing one, or start a new one.
@@ -65,7 +65,7 @@ public class ChallengesListFragment extends ListFragment implements LoaderManage
     }
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		String[] columnProjection = { ChallengeTable.COLUMN_ID, ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION };
+		String[] columnProjection = { ChallengeTable.COLUMN_ID, ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION, ChallengeTable.COLUMN_BRAND_DESC, ChallengeTable.COLUMN_CHALLENGE_REWARD };
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), ChallengeProvider.CONTENT_URI, columnProjection, null, null, null);
 		
 		return cursorLoader;

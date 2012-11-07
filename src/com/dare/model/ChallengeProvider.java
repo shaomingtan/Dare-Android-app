@@ -180,7 +180,7 @@ public class ChallengeProvider extends ContentProvider {
 	}
 	
 	private void checkColumns(String[] projection) {
-		String[] available = { ChallengeTable.COLUMN_ID, ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION };
+		String[] available = { ChallengeTable.COLUMN_ID, ChallengeTable.COLUMN_BRAND_NAME, ChallengeTable.COLUMN_TITLE, ChallengeTable.COLUMN_DESCRIPTION, ChallengeTable.COLUMN_BRAND_DESC, ChallengeTable.COLUMN_CHALLENGE_REWARD };
 		
 		if (projection != null) {
 			HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
@@ -196,6 +196,10 @@ public class ChallengeProvider extends ContentProvider {
 		ContentValues values = new ContentValues();
 		values.put(ChallengeTable.COLUMN_ID, challenge.getId());
 		values.put(ChallengeTable.COLUMN_BRAND_NAME, challenge.getBrand());
+		values.put(ChallengeTable.COLUMN_BRAND_DESC, challenge.getBrandDesc());
+//		values.put(ChallengeTable.COLUMN_BRAND_LOGO, challenge.getBrandLogo());
+//		values.put(ChallengeTable.COLUMN_CHALLENGE_PHOTO, challenge.getChallengePhoto());
+		values.put(ChallengeTable.COLUMN_CHALLENGE_REWARD, challenge.getChallengeReward());
 		values.put(ChallengeTable.COLUMN_TITLE, challenge.getTitle());
 		values.put(ChallengeTable.COLUMN_DESCRIPTION, challenge.getDescription());
 		values.put(ChallengeTable.COLUMN_CREATED_AT, challenge.getCreatedAt());
@@ -215,6 +219,18 @@ public class ChallengeProvider extends ContentProvider {
 			}
 			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_BRAND_NAME)) >= 0){
 				challenge.setBrand(cursor.getString(index));
+			}
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_BRAND_DESC)) >= 0){
+				challenge.setBrandDesc(cursor.getString(index));
+			}
+//			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_BRAND_LOGO)) >= 0){
+//				challenge.setBrandLogo(cursor.getString(index));
+///			}
+//			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_CHALLENGE_PHOTO)) >= 0){
+//				challenge.setChallengePhoto(cursor.getString(index));
+//			}
+			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_CHALLENGE_REWARD)) >= 0){
+				challenge.setChallengeReward(cursor.getString(index));
 			}
 			if ((index = cursor.getColumnIndex(ChallengeTable.COLUMN_TITLE)) >= 0){
 				challenge.setTitle(cursor.getString(index));
